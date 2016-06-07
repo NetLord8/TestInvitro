@@ -40,10 +40,12 @@ import java.util.List;
 @WebServlet(name = "UploadInvitroServlet" , urlPatterns = "/upload")
 public class UploadInvitroServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("utf-8");
         response.setContentType("text/plain; charset=utf-8");
         response.setCharacterEncoding("UTF-8");
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         PrintWriter out = response.getWriter();
+        String fileName="";
         ArrayList<InvitroRow> uploadList=null;
         if (isMultipart) {
             FileItemFactory factory = new DiskFileItemFactory();
@@ -55,7 +57,7 @@ public class UploadInvitroServlet extends HttpServlet {
                 while (iterator.hasNext()) {
                     FileItem item = (FileItem) iterator.next();
                     if (!item.isFormField()) {
-                        String fileName = item.getName();
+                        fileName = item.getName();
                         String ext=fileName.substring(fileName.lastIndexOf(".")+1);
                         Workbook workbook;
                         if(ext.length()==3)
@@ -68,9 +70,9 @@ public class UploadInvitroServlet extends HttpServlet {
                     }
                 }
             } catch (FileUploadException e) {
-                e.printStackTrace();
+                out.println("Ошибка "+e.getMessage()+"</br>");
             } catch (Exception e) {
-                e.printStackTrace();
+                out.println("Ошибка "+e.getMessage()+"</br>");
             }
             try {
                 Context initContext = new InitialContext();
@@ -82,7 +84,7 @@ public class UploadInvitroServlet extends HttpServlet {
                 String sql = "delete from rsr_bill_invitro";
                 CallableStatement call=conn.prepareCall(sql);
                 call.execute();
-                out.println("Старые данные очищены");
+                out.println("Старые данные очищены</br>");
                 PreparedStatement ps=conn.prepareStatement("INSERT INTO SOLUTION_MED.RSR_BILL_INVITRO ( DATE_TEST, NSS, INZ, FIO_PAT, CODE_TEST, TEXT_TEST, COUNT_TEST, PRICE_INVITRO) \n" +
                         "VALUES ( ?,?,?,?,?,?,?,?)");
                 for (InvitroRow irow: uploadList) {
@@ -96,20 +98,24 @@ public class UploadInvitroServlet extends HttpServlet {
                     ps.setDouble(8,irow.getPrice());
                     ps.execute();
                 }
-                out.println("Новые данные загружены");
-                ResultSet rs = statement.executeQuery("select sysdate as s from dual");
+                out.println("Новые данные из файла <b>"+fileName+"</b> загружены</br>");
+                ResultSet rs = statement.executeQuery("select count(rbi.inz) as count_test,sum(rbi.price_invitro) as sum_test from rsr_bill_invitro rbi");
 
-                int count = 1;
+
                 while (rs.next()) {
-                    out.println(rs.getDate("s"));
+                    out.println("Загружено <b>"+rs.getInt(1) +"</b> анализов на общую сумму <b>" +rs.getDouble(2)+"</b></br>");
 
                 }
-            } catch (NamingException ex) {
-                out.println(ex);
-            } catch (SQLException ex) {
-                out.println(ex);
+                conn.close();
+
+            } catch (NamingException e) {
+                out.println("Ошибка "+e.getMessage()+"</br>");
+            } catch (SQLException e) {
+                out.println("Ошибка "+e.getMessage()+"</br>");
             }
+            out.println("------------------------------------------------</br>");
             out.close();
+
         }
 
     }
@@ -117,7 +123,7 @@ public class UploadInvitroServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
 
-                writer.println("Only Post requests allowed");
+                writer.println("Only POST requests allowed");
 
     }
     private ArrayList<InvitroRow> getUploadList(Workbook workbook){
