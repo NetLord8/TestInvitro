@@ -1,6 +1,7 @@
 package com.il.servlet;
 
 import com.il.bean.InvitroRow;
+import com.il.util.UIFormatter;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -70,9 +71,9 @@ public class UploadInvitroServlet extends HttpServlet {
                     }
                 }
             } catch (FileUploadException e) {
-                out.println("Ошибка "+e.getMessage()+"</br>");
+                out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
             } catch (Exception e) {
-                out.println("Ошибка "+e.getMessage()+"</br>");
+                out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
             }
             try {
                 Context initContext = new InitialContext();
@@ -84,7 +85,7 @@ public class UploadInvitroServlet extends HttpServlet {
                 String sql = "delete from rsr_bill_invitro";
                 CallableStatement call=conn.prepareCall(sql);
                 call.execute();
-                out.println("Старые данные очищены</br>");
+                out.println(UIFormatter.getHighlightMessage("Старые данные очищены"));
                 PreparedStatement ps=conn.prepareStatement("INSERT INTO SOLUTION_MED.RSR_BILL_INVITRO ( DATE_TEST, NSS, INZ, FIO_PAT, CODE_TEST, TEXT_TEST, COUNT_TEST, PRICE_INVITRO) \n" +
                         "VALUES ( ?,?,?,?,?,?,?,?)");
                 for (InvitroRow irow: uploadList) {
@@ -98,20 +99,20 @@ public class UploadInvitroServlet extends HttpServlet {
                     ps.setDouble(8,irow.getPrice());
                     ps.execute();
                 }
-                out.println("Новые данные из файла <b>"+fileName+"</b> загружены</br>");
+                //out.println(UIFormatter.getHighlightMessage("Новые данные из файла <b>"+fileName+"</b> загружены"));
                 ResultSet rs = statement.executeQuery("select count(rbi.inz) as count_test,sum(rbi.price_invitro) as sum_test from rsr_bill_invitro rbi");
 
 
                 while (rs.next()) {
-                    out.println("Загружено <b>"+rs.getInt(1) +"</b> анализов на общую сумму <b>" +rs.getDouble(2)+"</b></br>");
+                    out.println(UIFormatter.getHighlightMessage("Новые данные из файла <b>"+fileName+"</b> загружены. Загружено <b>"+rs.getInt(1) +"</b> анализов на общую сумму <b>" +rs.getDouble(2)+"</b>"));
 
                 }
                 conn.close();
 
             } catch (NamingException e) {
-                out.println("Ошибка "+e.getMessage()+"</br>");
+                out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
             } catch (SQLException e) {
-                out.println("Ошибка "+e.getMessage()+"</br>");
+                out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
             }
             out.println("------------------------------------------------</br>");
             out.close();

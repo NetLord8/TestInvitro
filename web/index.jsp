@@ -9,10 +9,10 @@
 <form action="upload"
       enctype="multipart/form-data" method="post" id="invForm">
   <p>Загрузите файл </p>
-  <p><input type="file" name="excel"></p>
+  <p><input type="file" name="excel" class="ui-button"></p>
   <p><input type="submit" value="Загрузить"  class="ui-button"></p>
 </form>
-<div id="result" class="ui-state-highlight ui-corner-all" style="height:600px; overflow:scroll; width:1000px; border:2px ;margin-top: 20px; padding: 0 .7em;"></div>
+<div id="result" class="ui-widget" style="height:600px; overflow:scroll; width:1000px; border:2px ;margin-top: 20px; padding: 0 .7em;"></div>
 
 <script>
   $("#invForm").submit(function(e)
