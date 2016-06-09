@@ -38,8 +38,8 @@ import java.util.List;
 /**
  * Created by ulmasov_im on 07.06.2016.
  */
-@WebServlet(name = "UploadInvitroServlet" , urlPatterns = "/upload")
-public class UploadInvitroServlet extends HttpServlet {
+@WebServlet(name = "InvitroUploadServlet" , urlPatterns = "/upload")
+public class InvitroUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/plain; charset=utf-8");
