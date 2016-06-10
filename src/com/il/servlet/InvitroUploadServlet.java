@@ -26,24 +26,22 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-
 import java.time.LocalDate;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by ulmasov_im on 07.06.2016.
  */
-@WebServlet(name = "InvitroUploadServlet" , urlPatterns = "/upload")
+@WebServlet(name = "InvitroUploadServlet" , urlPatterns = "/uploadinvitro")
 public class InvitroUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/plain; charset=utf-8");
         response.setCharacterEncoding("UTF-8");
+        Connection conn=null;
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         PrintWriter out = response.getWriter();
         String fileName="";
@@ -79,7 +77,7 @@ public class InvitroUploadServlet extends HttpServlet {
                 Context initContext = new InitialContext();
                 Context envContext = (Context) initContext.lookup("java:comp/env");
                 DataSource ds = (DataSource) envContext.lookup("jdbc/medtest");
-                Connection conn = ds.getConnection();
+                conn = ds.getConnection();
 
                 Statement statement = conn.createStatement();
                 String sql = "delete from rsr_bill_invitro";
@@ -107,14 +105,19 @@ public class InvitroUploadServlet extends HttpServlet {
                     out.println(UIFormatter.getHighlightMessage("Новые данные из файла <b>"+fileName+"</b> загружены. Загружено <b>"+rs.getInt(1) +"</b> анализов на общую сумму <b>" +rs.getDouble(2)+"</b>"));
 
                 }
-                conn.close();
 
-            } catch (NamingException e) {
-                out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
-            } catch (SQLException e) {
+
+            }  catch (Exception e) {
                 out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
             }
-            out.println("------------------------------------------------</br>");
+            finally {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    out.println(UIFormatter.getErrorMessage("Ошибка "+e.getMessage()));
+                }
+            }
+
             out.close();
 
         }

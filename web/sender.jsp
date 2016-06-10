@@ -1,21 +1,19 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ulmasov_im
-  Date: 06.06.2016
-  Time: 10:55
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+         pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="/birt.tld" prefix="birt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>THuylo1221</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Insert title here</title>
 </head>
 <body>
-<form action="test"
-      enctype="multipart/form-data" method="post">
-    <p>Загрузите файл </p>
-    <p><input type="file" name="excel"></p>
-    <p><input type="submit" ></p>
-</form>
+<birt:viewer id="birtViewer" reportDesign="double_invitro.rptdesign"
+             pattern="frameset"
+             height="450"
+             width="700"
+             format="html"
+
+></birt:viewer>
 </body>
 </html>
